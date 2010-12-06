@@ -1,0 +1,35 @@
+Wordpress Library, that I (rmathews@gmail.com) got from
+http://www.blackbirdblog.it/programmazione/progetti/28
+
+    Copyright (C) 2005 Michele Ferretti
+    black.bird@tiscali.it
+    http://www.blackbirdblog.it
+
+    Copyright (c) 2010 - Roshan Mathews
+    rmathews@gmail.com
+    http://roshan.mathews.in
+
+------------------------------------------------------------------
+WordPress Python Library
+
+============================================================================
+
+A simple python library for WordPress XML-RPC interface.
+At the time are supported this methods:
+
+* getUsersBlogs
+* getUserInfo
+* getPost
+* getRecentPosts
+* newPost
+* editPost
+* deletePost
+* newMediaObject
+* getCategoryList
+* getPostCategories
+* setPostCategories
+* getTrackbackPings
+* publishPost
+* getPingbacks
+
+See example.py for simple example script

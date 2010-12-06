@@ -1,0 +1,7 @@
+There is some confusion about the LICENSE of this software.
+
+The original wordpresslib.py said it was under the LGPL, and so did
+the LICENSE file, but the comment on top of wordpresslib.py said it
+was GPLv2.
+
+Included are both the licenses.
