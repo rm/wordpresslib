@@ -77,6 +77,7 @@ class WordPressBlog:
         self.name    = ''
         self.url     = ''
         self.isAdmin = False
+        self.xmlrpc  = ''
 
 class WordPressUser:
     """Represents user item
@@ -208,14 +209,14 @@ class WordPressClient:
         """Get blog's users info
         """
         try:
-            blogs = self._server.blogger.getUsersBlogs(
-                    '', self.user, self.password)
+            blogs = self._server.wp.getUsersBlogs(self.user, self.password)
             for blog in blogs:
                 blogObj         = WordPressBlog()
                 blogObj.id      = blog['blogid']
                 blogObj.name    = blog['blogName']
                 blogObj.isAdmin = blog['isAdmin']
                 blogObj.url     = blog['url']
+                blogObj.xmlrpc  = blog['xmlrpc']
                 yield blogObj
         except xmlrpclib.Fault, fault:
             raise WordPressException(fault)
