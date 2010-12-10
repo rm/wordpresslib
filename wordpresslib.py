@@ -118,6 +118,7 @@ class WordPressPost(object):
         self.excerpt       = ''
         self.link          = ''
         self.categories    = []
+        self.tags          = []
         self.user          = ''
         self.allowPings    = False
         self.allowComments = False
@@ -132,7 +133,8 @@ class WordPressClient(object):
         self.blogId     = 0
         self.categories = None
         self.tags       = None
-        self._server    = xmlrpclib.ServerProxy(self.url)
+        self._server    = xmlrpclib.ServerProxy(
+            self.url, use_datetime=True)
 
     def _filterPost(self, post):
         """ Transform post struct in WordPressPost instance """
@@ -181,7 +183,8 @@ class WordPressClient(object):
             if blogId == blog.id:
                 self.blogId  = blogId
                 self.url     = blog.xmlrpc
-                self._server = xmlrpclib.ServerProxy(self.url)
+                self._server = xmlrpclib.ServerProxy(
+                    self.url, use_datetime=True)
                 found = True
 
         if not found:
@@ -248,8 +251,12 @@ class WordPressClient(object):
         """ Insert new post """
         blogContent = {
             'title' : post.title,
-            'description' : post.description
+            'description' : post.description,
+            'mt_keywords': post.tags,
         }
+
+        if post.date is not None:
+            blogContent['dateCreated'] = post.date
 
         # add categories
         categories = []
