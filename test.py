@@ -160,7 +160,7 @@ class TestWordPressClient(unittest.TestCase):
 
     def testPublishPost(self):
         lastPost = self.wp.getLastPost()
-p        self.failUnless(lastPost, 'last post is None')
+        self.failUnless(lastPost, 'last post is None')
         result = self.wp.publishPost(lastPost.id)
         self.failUnless(
                 result, 'publishPost %d failed, return=%s' % (
