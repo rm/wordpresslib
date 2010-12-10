@@ -93,6 +93,16 @@ class WordPressCategory(object):
         self.name      = ''
         self.isPrimary = False
 
+class WordPressTag(object):
+    """ Represents tag item """
+    def __init__(self):
+        self.id       = ''
+        self.name     = ''
+        self.count    = 0
+        self.slug     = ''
+        self.html_url = ''
+        self.rss_url  = ''
+
 class WordPressPost(object):
     """ Represents post item """
     def __init__(self):
@@ -118,6 +128,7 @@ class WordPressClient(object):
         self.password   = password
         self.blogId     = 0
         self.categories = None
+        self.tags       = None
         self._server    = xmlrpclib.ServerProxy(self.url)
 
     def _filterPost(self, post):
@@ -147,8 +158,29 @@ class WordPressClient(object):
             catObj.isPrimary = cat['isPrimary']
         return catObj
 
+    def _filterTag(self, tag):
+        """ Transform tag struct in WordPressTag instance """
+        tagObj          = WordPressTag()
+        tagObj.id       = int(tag['tag_id'])
+        tagObj.name     = tag['name']
+        tagObj.count    = tag['count']
+        tagObj.slug     = tag['slug']
+        tagObj.html_url = tag['html_url']
+        tagObj.rss_url  = tag['rss_url']
+        return tagObj
+
     def selectBlog(self, blogId):
         self.blogId = blogId
+        found = False
+        for blog in self.getUsersBlogs():
+            if blogId == blog.id:
+                self.blogId  = blogId
+                self.url     = blog.xmlrpc
+                self._server = xmlrpclib.ServerProxy(self.url)
+                found = True
+
+        if not found:
+            raise WordPressException('Blog not found')
 
     def supportedMethods(self):
         """ Get supported methods list """
@@ -295,6 +327,20 @@ class WordPressClient(object):
         try:
             return self._server.blogger.deletePost(
                     '', postId, self.user, self.password)
+        except xmlrpclib.Fault, fault:
+            raise WordPressException(fault)
+
+    def getTags(self):
+        """ Get blog's tag list """
+        try:
+            if not self.tags:
+                self.tags = []
+                tags = self._server.wp.getTags(
+                    self.blogId, self.user, self.password)
+                for tag in tags:
+                    self.tags.append(self._filterTag(tag))
+
+            return self.tags
         except xmlrpclib.Fault, fault:
             raise WordPressException(fault)
 
