@@ -8,19 +8,25 @@
     black.bird@tiscali.it
     http://www.blackbirdblog.it
 
+    Copyright (c) 2010 - Roshan Mathews
+    rmathews@gmail.com
+    http://roshan.mathews.in
+
     This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or any later version.
+    modify it under the terms of the GNU Lesser General Public License
+    as published by the Free Software Foundation; a copy is in the
+    file LICENSE.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU General Lesser Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.
+    You should have received a copy of the GNU Lesser General Public
+    License along with this program; if not, write to the
+    Free Software Foundation, Inc.,
+    59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 
     XML-RPC supported methods:
         * getUsersBlogs
