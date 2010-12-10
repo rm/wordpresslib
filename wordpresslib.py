@@ -55,8 +55,7 @@ import time
 import xmlrpclib
 
 class WordPressException(Exception):
-    """Custom exception for WordPress client operations
-    """
+    """ Custom exception for WordPress client operations """
     def __init__(self, obj):
         if isinstance(obj, xmlrpclib.Fault):
             self.id = obj.faultCode
@@ -69,9 +68,8 @@ class WordPressException(Exception):
         return '<%s %d: \'%s\'>' % (
                 self.__class__.__name__, self.id, self.message)
 
-class WordPressBlog:
-    """Represents blog item
-    """
+class WordPressBlog(object):
+    """ Represents blog item """
     def __init__(self):
         self.id      = ''
         self.name    = ''
@@ -79,9 +77,8 @@ class WordPressBlog:
         self.isAdmin = False
         self.xmlrpc  = ''
 
-class WordPressUser:
-    """Represents user item
-    """
+class WordPressUser(object):
+    """ Represents user item """
     def __init__(self):
         self.id        = ''
         self.firstName = ''
@@ -89,17 +86,15 @@ class WordPressUser:
         self.nickname  = ''
         self.email     = ''
 
-class WordPressCategory:
-    """Represents category item
-    """
+class WordPressCategory(object):
+    """ Represents category item """
     def __init__(self):
         self.id        = 0
         self.name      = ''
         self.isPrimary = False
 
-class WordPressPost:
-    """Represents post item
-    """
+class WordPressPost(object):
+    """ Represents post item """
     def __init__(self):
         self.id            = 0
         self.title         = ''
@@ -114,9 +109,8 @@ class WordPressPost:
         self.allowPings    = False
         self.allowComments = False
 
-class WordPressClient:
-    """Client for connect to WordPress XML-RPC interface
-    """
+class WordPressClient(object):
+    """ Client for connect to WordPress XML-RPC interface """
 
     def __init__(self, url, user, password):
         self.url        = url
@@ -127,8 +121,7 @@ class WordPressClient:
         self._server    = xmlrpclib.ServerProxy(self.url)
 
     def _filterPost(self, post):
-        """Transform post struct in WordPressPost instance
-        """
+        """ Transform post struct in WordPressPost instance """
         postObj               = WordPressPost()
         postObj.permaLink     = post['permaLink']
         postObj.description   = post['description']
@@ -146,8 +139,7 @@ class WordPressClient:
         return postObj
 
     def _filterCategory(self, cat):
-        """Transform category struct in WordPressCategory instance
-        """
+        """ Transform category struct in WordPressCategory instance """
         catObj      = WordPressCategory()
         catObj.id   = int(cat['categoryId'])
         catObj.name = cat['categoryName']
@@ -159,18 +151,15 @@ class WordPressClient:
         self.blogId = blogId
 
     def supportedMethods(self):
-        """Get supported methods list
-        """
+        """ Get supported methods list """
         return self._server.mt.supportedMethods()
 
     def getLastPost(self):
-        """Get last post
-        """
+        """ Get last post """
         return tuple(self.getRecentPosts(1))[0]
 
     def getRecentPosts(self, numPosts=5):
-        """Get recent posts
-        """
+        """ Get recent posts """
         try:
             posts = self._server.metaWeblog.getRecentPosts(
                     self.blogId, self.user, self.password, numPosts)
@@ -180,8 +169,7 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getPost(self, postId):
-        """Get post item
-        """
+        """ Get post item """
         try:
             return self._filterPost(
                     self._server.metaWeblog.getPost(
@@ -190,8 +178,7 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getUserInfo(self):
-        """Get user info
-        """
+        """ Get user info """
         try:
             userinfo = self._server.blogger.getUserInfo(
                     '', self.user, self.password)
@@ -206,8 +193,7 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getUsersBlogs(self):
-        """Get blog's users info
-        """
+        """ Get blog's users info """
         try:
             blogs = self._server.wp.getUsersBlogs(self.user, self.password)
             for blog in blogs:
@@ -222,8 +208,7 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def newPost(self, post, publish):
-        """Insert new post
-        """
+        """ Insert new post """
         blogContent = {
             'title' : post.title,
             'description' : post.description
@@ -254,8 +239,7 @@ class WordPressClient:
         return idNewPost
 
     def getPostCategories(self, postId):
-        """Get post's categories
-        """
+        """ Get post's categories """
         try:
             categories = self._server.mt.getPostCategories(
                     postId, self.user, self.password)
@@ -265,14 +249,12 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def setPostCategories(self, postId, categories):
-        """Set post's categories
-        """
+        """ Set post's categories """
         self._server.mt.setPostCategories(
                 postId, self.user, self.password, categories)
 
     def editPost(self, postId, post, publish):
-        """Edit post
-        """
+        """ Edit post """
         blogcontent = {
             'title'          : post.title,
             'description'    : post.description,
@@ -309,8 +291,7 @@ class WordPressClient:
             self.publishPost(postId)
 
     def deletePost(self, postId):
-        """Delete post
-        """
+        """ Delete post """
         try:
             return self._server.blogger.deletePost(
                     '', postId, self.user, self.password)
@@ -318,8 +299,7 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getCategoryList(self):
-        """Get blog's categories list
-        """
+        """ Get blog's categories list """
         try:
             if not self.categories:
                 self.categories = []
@@ -333,23 +313,20 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getCategoryIdFromName(self, name):
-        """Get category id from category name
-        """
+        """ Get category id from category name """
         for c in self.getCategoryList():
             if c.name == name:
                 return c.id
 
     def getTrackbackPings(self, postId):
-        """Get trackback pings of post
-        """
+        """ Get trackback pings of post """
         try:
             return self._server.mt.getTrackbackPings(postId)
         except xmlrpclib.Fault, fault:
             raise WordPressException(fault)
 
     def publishPost(self, postId):
-        """Publish post
-        """
+        """ Publish post """
         try:
             return (self._server.mt.publishPost(
                             postId, self.user, self.password) == 1)
@@ -357,16 +334,14 @@ class WordPressClient:
             raise WordPressException(fault)
 
     def getPingbacks(self, postUrl):
-        """Get pingbacks of post
-        """
+        """ Get pingbacks of post """
         try:
             return self._server.pingback.extensions.getPingbacks(postUrl)
         except xmlrpclib.Fault, fault:
             raise WordPressException(fault)
 
     def newMediaObject(self, mediaFileName):
-        """Add new media object (image, movie, etc...)
-        """
+        """ Add new media object (image, movie, etc...) """
         try:
             f = file(mediaFileName, 'rb')
             mediaBits = f.read()
