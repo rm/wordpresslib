@@ -89,9 +89,12 @@ class WordPressUser(object):
 class WordPressCategory(object):
     """ Represents category item """
     def __init__(self):
-        self.id        = 0
-        self.name      = ''
-        self.isPrimary = False
+        self.id          = 0
+        self.parentId    = 0
+        self.description = ''
+        self.name        = ''
+        self.html_url    = ''
+        self.rss_url     = ''
 
 class WordPressTag(object):
     """ Represents tag item """
@@ -153,9 +156,11 @@ class WordPressClient(object):
         """ Transform category struct in WordPressCategory instance """
         catObj      = WordPressCategory()
         catObj.id   = int(cat['categoryId'])
+        catObj.parentId = int(cat['parentId'])
+        catObj.description = cat['description']
         catObj.name = cat['categoryName']
-        if cat.has_key('isPrimary'):
-            catObj.isPrimary = cat['isPrimary']
+        catObj.html_url = cat['htmlUrl']
+        catObj.rss_url = cat['rssUrl']
         return catObj
 
     def _filterTag(self, tag):
@@ -247,14 +252,9 @@ class WordPressClient(object):
         }
 
         # add categories
-        i = 0
         categories = []
         for cat in post.categories:
-            if i == 0:
-                categories.append({'categoryId' : cat, 'isPrimary' : 1})
-            else:
-                categories.append({'categoryId' : cat, 'isPrimary' : 0})
-            i += 1
+            categories.append({'categoryId' : cat, 'isPrimary': 0})
 
         # insert new post
         idNewPost = int(
@@ -300,14 +300,9 @@ class WordPressClient(object):
             blogcontent['dateCreated'] = xmlrpclib.DateTime(post.date)
 
         # add categories
-        i = 0
         categories = []
         for cat in post.categories:
-            if i == 0:
-                categories.append({'categoryId' : cat, 'isPrimary' : 1})
-            else:
-                categories.append({'categoryId' : cat, 'isPrimary' : 0})
-            i += 1
+            categories.append({'categoryId' : cat, 'isPrimary': 0})
 
         result = self._server.metaWeblog.editPost(
                 postId, self.user, self.password, blogcontent, 0)
@@ -344,12 +339,12 @@ class WordPressClient(object):
         except xmlrpclib.Fault, fault:
             raise WordPressException(fault)
 
-    def getCategoryList(self):
+    def getCategories(self):
         """ Get blog's categories list """
         try:
             if not self.categories:
                 self.categories = []
-                categories = self._server.mt.getCategoryList(
+                categories = self._server.wp.getCategories(
                         self.blogId, self.user, self.password)
                 for cat in categories:
                     self.categories.append(self._filterCategory(cat))
@@ -360,7 +355,7 @@ class WordPressClient(object):
 
     def getCategoryIdFromName(self, name):
         """ Get category id from category name """
-        for c in self.getCategoryList():
+        for c in self.getCategories():
             if c.name == name:
                 return c.id
 
